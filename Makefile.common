@@ -12,6 +12,6 @@ SOFTWARE_AUTHOR  = fire-peregrine
 SOFTWARE_NAME    = argument_parser
 
 # Version
-SOFTWARE_VERSION = v0.1.0.2
+SOFTWARE_VERSION = v0.1.0.3
 
 

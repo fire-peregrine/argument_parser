@@ -468,7 +468,7 @@ int ArgParser_parse(ArgParser *obj, int argc, char **argv)
         /* Switch-type option. */
         if(pdef->varType == VarType_True)
         {
-            if(writeArg(argv[i], pdef) != 0)
+            if(writeArg("1", pdef) != 0)
             {
                 setErrorMsg(obj, "Invalid value: arg %s, %s", argv[i], pdef->name);
                 return 1;    
@@ -482,8 +482,8 @@ int ArgParser_parse(ArgParser *obj, int argc, char **argv)
             setErrorMsg(obj, "Lack of the last argument: Near the arg %s.", argv[i]);
             return 1;
         }
-
         i++;
+
         if(writeArg(argv[i], pdef) != 0)
         {
             setErrorMsg(obj, "Invalid value: arg %s, %s", argv[i], pdef->name);
