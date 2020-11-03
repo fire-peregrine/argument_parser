@@ -115,7 +115,7 @@ struct ArgParser_
     bool isHelpSpecified;                    ///< Show help message.
     bool isVerSpecified;                     ///< Show version string.
 
-    bool reqFullOpts;
+    bool reqFullPosParams;                   ///< If set, the parser requires all positional parameters.
 
     /* Argument Definitions */
     unsigned int numOptPrms;                 ///< Number of optional parameters.

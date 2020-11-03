@@ -4,7 +4,7 @@
  *  @author    fire-peregrine
  *  @date      2020/11/01
  *  @copyright Copyright (C) peregrine all rights reserved.
- *  @license   Released under the MIT License.
+ *             Released under the MIT License.
  */
 
 #include <stdio.h>
@@ -35,9 +35,9 @@ typedef struct Config_
 } Config;
 
 /* Signatures */
-static int printConfig(Config *config);
 
 
+/* Functions */
 /**
  *  @brief Main function
  *  @param [in] argc     Number of command line arguments
@@ -160,7 +160,7 @@ int main(int argc, char *argv[])
     /* Add switch-type optional parameter. */
     status = ArgParser_addTrue(aparser,
             &swParam                                  /* destination    */,
-            "-s"                                      /* short option   */,
+            "-w"                                      /* short option   */,
             "--switchparam"                           /* long option    */,
             "switch_param"                            /* parameter name */,
             "This is switch-type optional parameter." /* parameter description */);
@@ -184,8 +184,15 @@ int main(int argc, char *argv[])
 
     ArgParser_delete(aparser);
     
-
-    /* ... */
+    fprintf(stderr, "***** Config *****\n");
+    fprintf(stderr, "intParam1   : %d\n",    intParam1  ); 
+    fprintf(stderr, "intParam2   : %d\n",    intParam2  );
+    fprintf(stderr, "uintParam   : %u\n",    uintParam  );
+    fprintf(stderr, "boolParam   : %d\n",    boolParam  );
+    fprintf(stderr, "swParam     : %d\n",    swParam    );
+    fprintf(stderr, "stringParam : '%s'\n",  stringParam);
+    fprintf(stderr, "floatParam  : %f\n",    floatParam );
+    fprintf(stderr, "doubleParam : %lf\n",   doubleParam);
     return 0;
 
 error: /* error handling */
@@ -200,16 +207,4 @@ error: /* error handling */
     return FAILURE;
 }
 
-
-static int printConfig(Config *config)
-{
-    fprintf(stderr, "***** Config *****\n");
-    fprintf(stderr, "intParam    : %d\n",  config->intParam   );
-    fprintf(stderr, "uintParam   : %d\n",  config->uintParam  );
-    fprintf(stderr, "stringParam : %s\n",  config->stringParam);
-    fprintf(stderr, "floatParam  : %f\n",  config->floatParam );
-    fprintf(stderr, "doubleParam : %lf\n", config->doubleParam);
-    fprintf(stderr, "posParam    : %d\n",  config->posParam   );
-    return 0;    
-}
 

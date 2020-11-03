@@ -4,7 +4,7 @@
  *  @author    fire-peregrine
  *  @date      2020/11/01
  *  @copyright Copyright (C) peregrine all rights reserved.
- *  @license   Released under the MIT License.
+ *             Released under the MIT License.
  */
 
 #include <stdio.h>
@@ -37,8 +37,8 @@ static int printParamDescription(PrmDef *pdef, FILE *fp);
 /* Functions */
 /**
  *  @brief Create a new ArgParser object.
- *  @param [in] progName    Program name
- *  @param [in] description Program description
+ *  @param [in] progName Program name
+ *  @param [in] progDesc Program description
  *  @return A new ArgParser object if success, NULL otherwise.
  */
 ArgParser* ArgParser_new(char *progName, char *progDesc)
@@ -139,7 +139,20 @@ int ArgParser_delete(ArgParser *obj)
 
 
 /**
- *  @brief Set version.
+ *  @brief Require all positional parameters to be set.
+ *         If invoked, user cannot omit positional parameters.
+ *  @param [in] obj ArgParser object
+ *  @return Execution status
+ */
+int ArgParser_requireFullPosParams(ArgParser *obj)
+{
+    obj->reqFullPosParams = true;
+    return 0;
+}
+
+
+/**
+ *  @brief Set version string.
  *  @param [in] obj     ArgParser object
  *  @param [in] version Version string
  *  @return Execution status
@@ -255,9 +268,6 @@ int ArgParser_addString(ArgParser *obj, char *dest, char *defVal, unsigned int m
 
 
 /**
- *  @return   Execution status
- */
-/**
  *  @brief Add bool-type option.
  *  @param [in] obj      ArgParser object
  *  @param [in] dest     Destination
@@ -354,9 +364,12 @@ int ArgParser_addDouble(ArgParser *obj, double *dest, double defVal, char *sOpt,
 
 /**
  *  @brief Add switch-type option.
- *  @param [in] obj      ArgParser object
- *  @param [in] dest     Destination
- *  @param [in] defVal   Default value
+ *  @param [in] obj  ArgParser object
+ *  @param [in] dest Destination
+ *  @param [in] sOpt Short option
+ *  @param [in] lOpt Long option
+ *  @param [in] name Parameter name
+ *  @param [in] desc Parameter description
  *  @return   Execution status
  */
 int ArgParser_addTrue(ArgParser *obj, bool *dest, char *sOpt, char *lOpt, const char *name, const char *desc)
@@ -455,7 +468,7 @@ int ArgParser_parse(ArgParser *obj, int argc, char **argv)
         /* Switch-type option. */
         if(pdef->varType == VarType_True)
         {
-            if(writeArg(argv[i], pdef) != 0)
+            if(writeArg("1", pdef) != 0)
             {
                 setErrorMsg(obj, "Invalid value: arg %s, %s", argv[i], pdef->name);
                 return 1;    
@@ -469,8 +482,8 @@ int ArgParser_parse(ArgParser *obj, int argc, char **argv)
             setErrorMsg(obj, "Lack of the last argument: Near the arg %s.", argv[i]);
             return 1;
         }
-
         i++;
+
         if(writeArg(argv[i], pdef) != 0)
         {
             setErrorMsg(obj, "Invalid value: arg %s, %s", argv[i], pdef->name);
@@ -480,20 +493,24 @@ int ArgParser_parse(ArgParser *obj, int argc, char **argv)
     }
 
     /* Too few arguments. */
-    if((posIdx < obj->numPosPrms) && (obj->reqFullOpts == true))
+    if((posIdx < obj->numPosPrms) && (obj->reqFullPosParams == true))
     {
         setErrorMsg(obj, "Too few positonal arguments: Needs %d args. But has only %d args.", obj->numPosPrms, posIdx);
         return 1;
     }
 
     return 0;
+
 error: /* error handling */
     return 1;
 }
 
 
 /**
- *  @brief ---
+ *  @brief Print internal variables.
+ *  @param [in] obj ArgParser object
+ *  @param [in] fp  Output file pointer
+ *  @return Execution status
  */
 int ArgParser_dump(ArgParser *obj, FILE *fp)
 {
@@ -718,7 +735,8 @@ static bool isOptParam(const char *sOpt, const char *lOpt)
 
 /**
  *  @brief Check if the parameter is a positional parameter.
- *  @param [in] def Parameter definition
+ *  @param [in] sOpt   Short option
+ *  @param [in] lOpt   Long option
  *  @retval true  The patameter is a positional patameter.
  *  @retval false The patameter is not a positional patameter.
  */
@@ -751,7 +769,7 @@ static PrmDef* findOptionalParam(ArgParser *obj, const char *arg)
 
 /**
  *  @brief Write defult parameters.
- *  @param [in] obj   ArgParser object
+ *  @param [in] obj ArgParser object
  *  @return Execution status
  */
 static int writeDefaultParams(ArgParser *obj)
@@ -793,9 +811,7 @@ error: /* error handling */
 
 /**
  *  @brief Convert a value into the specified type and store to the destination.
- *  @param [in]  val  Value
- *  @param [in]  type Type
- *  @param [out] dest Destination
+ *  @param [in] pdef Parameter definition
  *  @return Execution status
  */
 static int writeDefaultValue(PrmDef *pdef)
@@ -854,9 +870,8 @@ static int writeDefaultValue(PrmDef *pdef)
 /**
  *  @brief Convert single command line argument into the specified type
  *         and store to the destination.
- *  @param [in]  arg     Command line argument
- *  @param [in]  podef   Parameter definition
- *  @param [out] dest    Destination
+ *  @param [in] arg  Command line argument
+ *  @param [in] pdef Parameter definition
  *  @return Execution status
  */
 static int writeArg(const char *arg, PrmDef *pdef)
@@ -970,7 +985,10 @@ static ArgType determineArgType(const char *arg)
 
 
 /**
- *  @brief Check if the help opetion is specified.
+ *  @brief Check if a help opetion is specified.
+ *  @param [in] arg Command line argument
+ *  @retval true  The argument is a help option.
+ *  @retval false The argument is not a help option. 
  */
 static bool isHelpOption(const char *arg)
 {
@@ -979,7 +997,10 @@ static bool isHelpOption(const char *arg)
 
 
 /**
- *  @brief Check if the version opetion is specified.
+ *  @brief Check if a version opetion is specified.
+ *  @param [in] arg Command line argument
+ *  @retval true  The argument is a version option.
+ *  @retval false The argument is not a version option.
  */
 static bool isVerOption(const char *arg)
 {
@@ -989,8 +1010,8 @@ static bool isVerOption(const char *arg)
 
 /**
  *  @brief Store error message.
- *  @param [in] obj      ArgParser object
- *  @param [in] errorMsg Format string
+ *  @param [in] obj ArgParser object
+ *  @param [in] fmt Format string
  *  @param [in] ...      
  */
 static int setErrorMsg(ArgParser *obj, char *fmt, ...)
