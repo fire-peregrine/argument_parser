@@ -22,7 +22,7 @@ help:
 
 # Build this software.
 build:
-	$(MAKE) -C build/ build 
+	$(MAKE) -C build/ 
 
 
 # Clean build environment.
