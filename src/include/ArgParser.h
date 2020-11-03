@@ -21,6 +21,7 @@ typedef struct ArgParser_ ArgParser;
 /* Signatures */
 ArgParser* ArgParser_new(char *progName, char *progDesc);
 int ArgParser_delete(ArgParser *obj);
+int ArgParser_requireFullPosParams(ArgParser *obj);
 
 int ArgParser_addVersion(ArgParser *obj, char *version);
 int ArgParser_addDate(ArgParser *obj, char *date);

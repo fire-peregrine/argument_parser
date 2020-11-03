@@ -139,7 +139,20 @@ int ArgParser_delete(ArgParser *obj)
 
 
 /**
- *  @brief Set version.
+ *  @brief Require all positional parameters to be set.
+ *         If invoked, user cannot omit positional parameters.
+ *  @param [in] obj ArgParser object
+ *  @return Execution status
+ */
+int ArgParser_requireFullPosParams(ArgParser *obj)
+{
+    obj->reqFullPosParams = true;
+    return 0;
+}
+
+
+/**
+ *  @brief Set version string.
  *  @param [in] obj     ArgParser object
  *  @param [in] version Version string
  *  @return Execution status
@@ -480,13 +493,14 @@ int ArgParser_parse(ArgParser *obj, int argc, char **argv)
     }
 
     /* Too few arguments. */
-    if((posIdx < obj->numPosPrms) && (obj->reqFullOpts == true))
+    if((posIdx < obj->numPosPrms) && (obj->reqFullPosParams == true))
     {
         setErrorMsg(obj, "Too few positonal arguments: Needs %d args. But has only %d args.", obj->numPosPrms, posIdx);
         return 1;
     }
 
     return 0;
+
 error: /* error handling */
     return 1;
 }
