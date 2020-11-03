@@ -8,8 +8,8 @@
  */
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+// #include <stdlib.h>
+// #include <string.h>
 #include "ArgParser.h"
 
 /* Macros */
@@ -17,6 +17,11 @@
  *  @brief Maximum string buffer size
  */
 #define MAX_STRING_BUF   32
+
+
+#define SUCCESS 0
+#define FAILURE 1
+
 
 /* Structs */
 typedef struct Config_
@@ -42,90 +47,157 @@ static int printConfig(Config *config);
 int main(int argc, char *argv[])
 {
     int status;
-    Config config;
-    memset(&config, 0xAA, sizeof(Config));
+    int intParam1;
+    int intParam2;
+    unsigned int uintParam;
+    bool boolParam;
+    bool swParam;
+    char stringParam[32];
+    float floatParam;
+    double doubleParam;
 
     /* Create ArgParser object. */
-    ArgParser *aparser = ArgParser_new("program", "description");
+    ArgParser *aparser = ArgParser_new(
+            "example_program"            /* Program name        */,
+            "This is a example program." /* Program description */);
     if(aparser == NULL)
-        goto error;
+        return FAILURE;
 
-    /* Add program version string. */
+    /* Add version string. */
     status = ArgParser_addVersion(aparser, "v1.0.0");
     if(status != 0)
         goto error;
-
-    /* Add program author name. */
-    status = ArgParser_addAuthor(aparser, "Your Name");
+    
+    /* Add release date. */
+    status = ArgParser_addDate(aparser, "2020/11/01");
     if(status != 0)
         goto error;
-
-    /* Add release date. */
-    status = ArgParser_addDate(aparser, "2020/11/01/Mon");
+    
+    /* Add author name. */
+    status = ArgParser_addAuthor(aparser, "John Doe");
     if(status != 0)
         goto error;
 
     /* Add int-type optional parameter. */
     status = ArgParser_addInt(aparser,
-            &config.intParam, -123, "-i", "--iparam", "int_param",
-            "This is int type parameter.");
+            &intParam1                             /* destination    */,
+            100                                    /* default value  */,
+            "-i"                                   /* short option   */,
+            "--intparam"                           /* long option    */,
+            "optional_param"                       /* parameter name */,
+            "This is int-type optional parameter." /* parameter description */);
     if(status != 0)
         goto error;
-
-    /* Add uint-type optional parameter. */
+    
+    /* Add int-type positional parameter. */
+    status = ArgParser_addInt(aparser,
+            &intParam2                              /* destination    */,
+            200                                     /* default value  */,
+            NULL                                    /* no option      */,
+            NULL                                    /* no option      */,
+            "positional_param"                      /* parameter name */,
+            "This is int-type positinal parameter." /* parameter description */);
+    if(status != 0)
+        goto error;
+    
+    /* Add unsigned-int-type optional parameter. */
     status = ArgParser_addUInt(aparser,
-            &config.uintParam, 9999, "-u", "--uparam", "uint_param",
-            "This is unsigned int type parameter.");
+            &uintParam                                       /* destination    */,
+            300                                              /* default value  */,
+            "-u"                                             /* short option   */,
+            "-uintparam"                                     /* long option    */,
+            "uint_param"                                     /* parameter name */,
+            "This is unsigned-int-type optional  parameter." /* parameter description */);
     if(status != 0)
         goto error;
-
+    
     /* Add string-type optional parameter. */
     status = ArgParser_addString(aparser,
-            config.stringParam, "hello", MAX_STRING_BUF, "-s", "--sparam", "string_param",
-            "This is string type parameter.");
+            stringParam                               /* destination    */,
+            "default_string"                          /* default value  */,
+            32                                        /* max length     */,
+            "-s"                                      /* short option   */,
+            "-stringparam"                            /* long option    */,
+            "string_param"                            /* parameter name */,
+            "This is string-type optional parameter." /* parameter description */);
     if(status != 0)
         goto error;
-
+    
+    
+    /* Add bool-type optional parameter. */
+    status = ArgParser_addBool(aparser,
+            &boolParam                              /* destination    */,
+            false                                   /* default value  */,
+            "-b"                                    /* short option   */,
+            "--boolparam"                           /* long option    */,
+            "bool_param"                            /* parameter name */,
+            "This is bool-type optional parameter." /* parameter description */);
+    if(status != 0)
+        goto error;
+    
     /* Add float-type optional parameter. */
     status = ArgParser_addFloat(aparser,
-            &config.floatParam, 222.22, "-f", "--fparam", "float_param",
-            "This is float type parameter.");
+            &floatParam                              /* destination    */,
+            123.45                                   /* default value  */,
+            "-f"                                     /* short option   */,
+            "--floatparam"                           /* long option    */,
+            "float_param"                            /* parameter name */,
+            "This is float-type optional parameter." /* parameter description */);
     if(status != 0)
         goto error;
     
     /* Add double-type optional parameter. */
     status = ArgParser_addDouble(aparser,
-            &config.doubleParam, 333.33, "-d", "--dparam", "double_param",
-            "This is double type parameter.");
+            &doubleParam                              /* destination    */,
+            123.45                                    /* default value  */,
+            "-d"                                      /* short option   */,
+            "--doubleparam"                           /* long option    */,
+            "double_param"                            /* parameter name */,
+            "This is double-type optional parameter." /* parameter description */);
     if(status != 0)
         goto error;
 
-
-    /* Add int-type positional parameter. */
-    status = ArgParser_addInt(aparser,
-            &config.posParam, -123, NULL, NULL, "int_pos_param",
-            "This is int type positional parameter.");
+    /* Add switch-type optional parameter. */
+    status = ArgParser_addTrue(aparser,
+            &swParam                                  /* destination    */,
+            "-s"                                      /* short option   */,
+            "--switchparam"                           /* long option    */,
+            "switch_param"                            /* parameter name */,
+            "This is switch-type optional parameter." /* parameter description */);
     if(status != 0)
         goto error;
-
 
     /* Parse command line arguments. */
     status = ArgParser_parse(aparser, argc, argv);
     if(status != 0)
         goto error;
 
+    /* Print parse result. */
+    printf("intParam1 = %d\n", intParam1);
+    printf("intParam2 = %d\n", intParam2);
+    
+    if(aparser != NULL)
+    {
+        const char *errMsg = ArgParser_getErrorMsg(aparser);
+        fprintf(stderr, "Info: %s\n", errMsg);
+    }
+
     ArgParser_delete(aparser);
-    fprintf(stderr, "OK!\n");
-    printConfig(&config);
+    
+
+    /* ... */
     return 0;
 
 error: /* error handling */
 
-    fprintf(stderr, "Error: %s\n", ArgParser_getErrorMsg(aparser));
+    if(aparser != NULL)
+    {
+        const char *errMsg = ArgParser_getErrorMsg(aparser);
+        fprintf(stderr, "Error: %s\n", errMsg);
+    }
 
     ArgParser_delete(aparser);
-    // printConfig(&config);
-    return 1;
+    return FAILURE;
 }
 
 
