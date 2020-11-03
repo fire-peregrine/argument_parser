@@ -70,13 +70,30 @@ ArgParser* ArgParser_new(char *progName, char *progDesc)
 
     obj->bufIdx = 0;
     obj->buf[0] = '\0';
-   
+  
+    // Add the program name
     obj->progName = copyStr(obj, progName);
     if(obj->progName == NULL)
         goto error;
     
+    // Add the program description
     obj->progDesc = copyStr(obj, progDesc);
     if(obj->progDesc == NULL)
+        goto error;
+
+    // Initialize the version string.
+    obj->version = copyStr(obj, "");
+    if(obj->version == NULL)
+        goto error;
+
+    // Initialize release date.
+    obj->date    = copyStr(obj, "");
+    if(obj->date == NULL)
+        goto error;
+
+    // Initialize author name.
+    obj->author  = copyStr(obj, "");
+    if(obj->author == NULL)
         goto error;
 
     /* Register help option. */
@@ -1121,8 +1138,9 @@ static int printParamDescription(PrmDef *pdef, FILE *fp)
  */
 static int printVersion(ArgParser *obj, FILE *fp)
 {
-    fprintf(fp, "%s   version %s\n", obj->progName, obj->version); 
+    fprintf(fp, "%s %s\n", obj->progName, obj->version); 
     fprintf(fp, "written by %s\n", obj->author); 
+    fprintf(fp, "released on %s\n", obj->date); 
     fprintf(fp, "\n");
     return 0;
 }
