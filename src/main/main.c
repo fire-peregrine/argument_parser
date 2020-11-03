@@ -4,7 +4,7 @@
  *  @author    fire-peregrine
  *  @date      2020/11/01
  *  @copyright Copyright (C) peregrine all rights reserved.
- *  @license   Released under the MIT License.
+ *             Released under the MIT License.
  */
 
 #include <stdio.h>

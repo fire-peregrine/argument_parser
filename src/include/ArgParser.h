@@ -1,14 +1,14 @@
 /**
- *  @file      ArgumentParser.h
+ *  @file      ArgParser.h
  *  @brief     Argument Parser, local file.
  *  @author    fire-peregrine
  *  @date      2020/11/01
  *  @copyright Copyright (C) peregrine all rights reserved.
- *  @license   Released under the MIT License.
+ *             Released under the MIT License.
  */
 
-#ifndef SRC_ARGUMENT_PARSER_H_
-#define SRC_ARGUMENT_PARSER_H_
+#ifndef SRC_ARG_PARSER_H_
+#define SRC_ARG_PARSER_H_
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -19,8 +19,8 @@ typedef struct ArgParser_ ArgParser;
 /* Signatures */
 /**
  *  @brief Create a new ArgParser object.
- *  @param [in] progName    Program name
- *  @param [in] description Program description
+ *  @param [in] progName Program name
+ *  @param [in] progDesc Program description
  *  @return A new ArgParser object if success, NULL otherwise.
  */
 ArgParser* ArgParser_new(char *progName, char *progDesc);
@@ -179,10 +179,13 @@ int ArgParser_addDouble(ArgParser *obj,
 
 /**
  *  @brief Add switch-type option.
- *  @param [in] obj      ArgParser object
- *  @param [in] dest     Destination
- *  @param [in] defVal   Default value
- *  @return Execution status
+ *  @param [in] obj  ArgParser object
+ *  @param [in] dest Destination
+ *  @param [in] sOpt Short option
+ *  @param [in] lOpt Long option
+ *  @param [in] name Parameter name
+ *  @param [in] desc Parameter description
+ *  @return   Execution status
  */
 int ArgParser_addTrue(ArgParser *obj,
         bool *dest, char *sOpt, char *lOpt, const char *name, const char *desc);
@@ -225,6 +228,6 @@ int ArgParser_printHelp(ArgParser *obj, FILE *fp);
 const char* ArgParser_getErrorMsg(ArgParser *obj);
 
 
-#endif // SRC_ARGUMENT_PARSER_H_
+#endif // SRC_ARG_PARSER_H_
 
 
