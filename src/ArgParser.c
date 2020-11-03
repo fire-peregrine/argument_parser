@@ -268,9 +268,6 @@ int ArgParser_addString(ArgParser *obj, char *dest, char *defVal, unsigned int m
 
 
 /**
- *  @return   Execution status
- */
-/**
  *  @brief Add bool-type option.
  *  @param [in] obj      ArgParser object
  *  @param [in] dest     Destination
@@ -507,7 +504,10 @@ error: /* error handling */
 
 
 /**
- *  @brief ---
+ *  @brief Print internal variables.
+ *  @param [in] obj ArgParser object
+ *  @param [in] fp  Output file pointer
+ *  @return Execution status
  */
 int ArgParser_dump(ArgParser *obj, FILE *fp)
 {
